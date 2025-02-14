@@ -20,6 +20,10 @@ import InternalResults from "./pages/InternalResults";
 import GeneralPenalties from "./pages/GeneralPenalties";
 import ScoreBreakdown from "./pages/ScoreBreakdown";
 import RunPenalties from "./pages/RunPenalties";
+import Signup from "./pages/Signup";
+import ContestPage from "./pages/ContestsPage";
+import ContestScores from "./pages/ContestScores";
+import PulicScoreBreakdown from "./pages/PublicScoreBreakdown";
 
 function App() {
   const currentLink = useLocation().pathname;
@@ -30,10 +34,12 @@ function App() {
       <ThemeProvider theme={theme}>
         {currentLink !== "/set-password/" &&
           currentLink !== "/forgot-password/" &&
-          currentLink !== "/login/" && <Navbar />}
+          currentLink !== "/login/" && 
+          currentLink !== "/signup/" && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/forgot-password/" element={<ForgotPassword />} />
+          <Route path="/contestresults/:contestId" element={<ContestScores />} />
           {isAuthenticated && role?.user_type != 4 && (
             <Route path="/judging/:judgeId/" element={<Judging />} />
           )}
@@ -67,7 +73,10 @@ function App() {
               element={<RunPenalties />}
             />
           )}
+          {<Route path="/signup/" element={<Signup />} />}
           {<Route path="/login/" element={<Login />} />}
+          {<Route path="/contestPage/" element={<ContestPage />} />}
+          <Route path="/public-score-breakdown/:teamId"element={<ScoreBreakdown />}/>
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (
             <Route path="/organizer/" element={<Organizer />} />
