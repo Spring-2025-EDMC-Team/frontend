@@ -76,7 +76,7 @@ function App() {
           {<Route path="/signup/" element={<Signup />} />}
           {<Route path="/login/" element={<Login />} />}
           {<Route path="/contestPage/" element={<ContestPage />} />}
-          <Route path="/public-score-breakdown/:teamId"element={<ScoreBreakdown />}/>
+          <Route path="/public-score-breakdown/:teamId"element={<PulicScoreBreakdown />}/>
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (
             <Route path="/organizer/" element={<Organizer />} />
