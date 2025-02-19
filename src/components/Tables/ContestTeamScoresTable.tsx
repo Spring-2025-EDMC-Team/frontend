@@ -1,63 +1,42 @@
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import { Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Team } from "../../types";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import theme from "../../theme";
 
-interface IContestTeamScoresTable {
-  team: Team;
+interface Team {
+  id: number;
+  team_name: string;
+  team_rank?: number;
+  total_score?: number;
 }
 
-export default function ContestTeamScoresTable(props: IContestTeamScoresTable) {
-  const { team } = props;
-  const navigate = useNavigate();
+interface ContestResultsTableProps {
+  teams: Team[];
+  coachNames: { [key: number]: string };
+  teamAwards: { [key: number]: string };
+}
+
+export default function ContestResultsTable({ teams, coachNames, teamAwards }: ContestResultsTableProps) {
   return (
-    <TableContainer component={Box}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer component={Paper} elevation={3} sx={{ width: "100%", borderRadius: 2 }}>
+      <Table>
+        <TableHead>
+          <TableRow sx={{ bgcolor: theme.palette.primary.main }}>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Team Name</TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Coach</TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Rank</TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Score</TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Awards</TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell align="center">Rank</TableCell>
-            <TableCell align="center">Journal</TableCell>
-            <TableCell align="center">Presentation</TableCell>
-            <TableCell align="center">Machine Design & Operation</TableCell>
-            <TableCell align="center">Penalties</TableCell>
-            <TableCell align="center">Total Score</TableCell>
-            <TableCell align="center">Score Breakdown</TableCell>
-          </TableRow>
-          <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-            {team.team_rank ? (
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                {team.team_rank}
-              </TableCell>
-            ) : (
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                0
-              </TableCell>
-            )}
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              {team.journal_score}
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              {team.presentation_score}
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              {team.machinedesign_score}
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              {team.penalties_score}
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              {team.total_score}
-            </TableCell>
-            <TableCell align="center">
-              <Button onClick={() => navigate(`/public-score-breakdown/${team.id}`)}>
-                View Score Breakdown
-              </Button>
-            </TableCell>
-          </TableRow>
+          {teams.map((team) => (
+            <TableRow key={team.id} sx={{ "&:nth-of-type(odd)": { bgcolor: theme.palette.action.hover } }}>
+              <TableCell>{team.team_name}</TableCell>
+              <TableCell>{coachNames[team.id] || "N/A"}</TableCell>
+              <TableCell>{team.team_rank || 0}</TableCell>
+              <TableCell>{team.total_score}</TableCell>
+              <TableCell>{teamAwards[team.id] || "N/A"}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

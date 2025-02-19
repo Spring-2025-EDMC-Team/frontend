@@ -1,22 +1,10 @@
-import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Box from "@mui/material/Box";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Container } from "@mui/material";
+import { Typography, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import theme from "../theme";
 import { useMapContestToTeamStore } from "../store/map_stores/mapContestToTeamStore";
-import ContestTeamScoresTable from "../components/Tables/ContestTeamScoresTable";
+import useSpecialAwardStore from "../store/map_stores/mapAwardToTeamStore";
+import { useMapCoachToTeamStore } from "../store/map_stores/mapCoachToTeamStore";
 
 export default function ContestScores() {
   const { contestId } = useParams<{ contestId: string }>();
@@ -26,11 +14,18 @@ export default function ContestScores() {
     teamsByContest,
     fetchTeamsByContest,
     clearTeamsByContest,
-    contestsForTeams,
-    fetchContestsByTeams,
-    clearContests,
+    clearContests
   } = useMapContestToTeamStore();
 
+  // Zustand stores
+  const { awards, AwardsByTeamTable } = useSpecialAwardStore();
+  const { coachesByTeams, fetchCoachesByTeams } = useMapCoachToTeamStore();
+
+  // Local state to store fetched coach name and awards
+  const [coachNames, setCoachNames] = useState<{ [key: number]: string }>({});
+  const [teamAwards, setTeamAwards] = useState<{ [key: number]: string }>({});
+
+  // Fetch teams by contest
   useEffect(() => {
     if (contestIdNumber) {
       fetchTeamsByContest(contestIdNumber);
@@ -41,82 +36,54 @@ export default function ContestScores() {
     };
   }, [contestIdNumber]);
 
+  // Fetch coaches and awards 
   useEffect(() => {
     if (teamsByContest.length > 0) {
-      fetchContestsByTeams(teamsByContest);
+      // Format for fetching coaches 
+      const teamData = teamsByContest.map((team) => ({ id: team.id }));
+      fetchCoachesByTeams(teamData);
+  
+      // Format for fetching awards 
+      teamsByContest.forEach((team) => {
+        AwardsByTeamTable(team.id);
+      });
     }
   }, [teamsByContest]);
-
+  
+  // update local state with coach names and team awards when data changes
   useEffect(() => {
-    const handlePageHide = () => {
-      clearTeamsByContest();
-      clearContests();
-    };
+    // map team id to coach names
+    const newCoachNames = teamsByContest.reduce((acc, team) => {
+      const teamCoachData = coachesByTeams[team.id];
+      const fullName = teamCoachData ? `${teamCoachData.first_name || ""} ${teamCoachData.last_name || ""}`.trim() : "N/A";
+      return { ...acc, [team.id]: fullName || "N/A" };
+    }, {});
+    
+    // map team award to team id
+    const newTeamAwards = teamsByContest.reduce((acc, team) => {
+      const teamAwardsData = awards[team.id];
+      let awardString = "N/A";
+      if (Array.isArray(teamAwardsData)) {
+        awardString = teamAwardsData.map((award) => award.award_name).join(", ") || "N/A";
+      } else if (teamAwardsData) {
+        awardString = teamAwardsData.award_name || "N/A";
+      }
+      return { ...acc, [team.id]: awardString };
+    }, {});
 
-    window.addEventListener("pagehide", handlePageHide);
-    return () => {
-      window.removeEventListener("pagehide", handlePageHide);
-    };
-  }, []);
-
-  function createData(id: number, name: string, contest: string, isDisqualified: boolean) {
-    return { id, name, contest, isDisqualified };
-  }
-
-  function Row(props: { row: ReturnType<typeof createData>; index: number }) {
-    const { row, index } = props;
-    const [open, setOpen] = React.useState(false);
-
-    return (
-      <>
-        <TableRow
-          sx={{ "& > *": { borderBottom: "none" } }}
-          onClick={() => setOpen(!open)}
-        >
-          <TableCell>
-            <IconButton aria-label="expand row" size="small">
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
-          <TableCell>{row.name}</TableCell>
-          <TableCell>
-            Score: {teamsByContest[index]?.total_score ?? "N/A"}
-            </TableCell>
-          {row.isDisqualified && (
-            <TableCell sx={{ color: "red" }}>Disqualified</TableCell>
-          )}
-        </TableRow>
-        <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: 1 }}>
-                <ContestTeamScoresTable team={teamsByContest[index]} />
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      </>
-    );
-  }
-
-  const rows = teamsByContest.map((team) =>
-    createData(
-      team.id,
-      team.team_name,
-      contestsForTeams[team.id]?.name || "N/A",
-      team.organizer_disqualified
-    )
-  );
+    setCoachNames(newCoachNames);
+    setTeamAwards(newTeamAwards);
+  }, [awards, coachesByTeams, teamsByContest]);
 
   return (
     <>
       <Typography variant="h1" sx={{ ml: "2%", mt: 4, mb: 4 }}>
         Contest Results
       </Typography>
-      
+
       <Link to="/contestPage/" style={{ textDecoration: "none", color: "inherit" }}>
         <Typography variant="body2" sx={{ ml: 2, mt: 2 }}>
-          {"<"} Back to Contests{" "}
+          {"<"} Back to Contests {" "}
         </Typography>
       </Link>
 
@@ -132,11 +99,26 @@ export default function ContestScores() {
           alignItems: "center",
         }}
       >
-        <TableContainer component={Paper}>
-          <Table aria-label="collapsible table">
+        <TableContainer component={Paper} elevation={3} sx={{ width: "100%", borderRadius: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: theme.palette.primary.main }}>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Team Name</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Coach</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Rank</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Score</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Awards</TableCell>
+              </TableRow>
+            </TableHead>
             <TableBody>
-              {rows.map((row, index) => (
-                <Row key={row.id} row={row} index={index} />
+              {teamsByContest.map((team) => (
+                <TableRow key={team.id} sx={{ "&:nth-of-type(odd)": { bgcolor: theme.palette.action.hover } }}>
+                  <TableCell>{team.team_name}</TableCell>
+                  <TableCell>{coachNames[team.id] || "N/A"}</TableCell>
+                  <TableCell>{team.team_rank || 0}</TableCell>
+                  <TableCell>{team.total_score}</TableCell>
+                  <TableCell>{teamAwards[team.id] || "N/A"}</TableCell>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
