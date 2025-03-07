@@ -8,8 +8,12 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import useSpecialAwardStore from "../store/map_stores/mapAwardToTeamStore";
+import useSpecialAwardStore, { SpecialAward } from "../store/map_stores/mapAwardToTeamStore";
 
 export default function AdminSpecialAwardsPage() {
   const {
@@ -19,23 +23,42 @@ export default function AdminSpecialAwardsPage() {
     getAllAwards,
     createAward,
     deleteAward,
+    updateAward,
   } = useSpecialAwardStore();
 
   // State variables
   const [awardName, setAwardName] = useState("");
-  const [isJudge, setIsJudge] = useState(false); // New state for judge boolean
+  const [isJudge, setIsJudge] = useState(false);
+  const [isVoted, setIsVoted] = useState(false);
+  const [editingAward, setEditingAward] = useState<SpecialAward | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     getAllAwards();
   }, []);
 
-  // Create a new award with isJudge option
+  // Toggle logic to ensure only one option is selected
+  const handleJudgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setIsJudge(isChecked);
+    if (isChecked) setIsVoted(false);
+  };
+
+  const handleVotedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setIsVoted(isChecked);
+    if (isChecked) setIsJudge(false);
+  };
+
+  // Create a new award
   const handleCreateAward = async () => {
     if (awardName) {
-      await createAward({ teamid: 0, award_name: awardName, isjudge: isJudge }); // Include isJudge
+      const payload = { teamid: 0, award_name: awardName, isJudge: isJudge };
+      await createAward(payload);
       setAwardName("");
-      setIsJudge(false); // Reset checkbox
-      getAllAwards(); // Refresh list
+      setIsJudge(false);
+      setIsVoted(false);
+      getAllAwards();
     }
   };
 
@@ -45,13 +68,49 @@ export default function AdminSpecialAwardsPage() {
     getAllAwards();
   };
 
+  // Edit an award
+  const handleEditAward = (award: SpecialAward) => {
+    setEditingAward(award);
+    setAwardName(award.award_name);
+    setIsJudge(award.isJudge);
+    setIsVoted(!award.isJudge);
+    setIsModalOpen(true);
+  };
+
+  // Update an award
+  const handleUpdateAward = async () => {
+    if (editingAward && awardName) {
+      const updatedAward = {
+        ...editingAward,
+        award_name: awardName,
+        isJudge: isJudge, 
+      };
+      await updateAward(editingAward.teamid, editingAward.award_name, updatedAward);
+      setEditingAward(null);
+      setAwardName("");
+      setIsJudge(false);
+      setIsVoted(false);
+      setIsModalOpen(false);
+      getAllAwards();
+    }
+  };
+
+  // Close the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingAward(null);
+    setAwardName("");
+    setIsJudge(false);
+    setIsVoted(false);
+  };
+
   return (
     <Container>
       <Typography variant="h1" sx={{ m: 5 }}>
         Special Awards Management
       </Typography>
 
-      {/* Award name input field */}
+      {/* Award name input */}
       <TextField
         label="Award Name"
         variant="outlined"
@@ -61,21 +120,26 @@ export default function AdminSpecialAwardsPage() {
         sx={{ mb: 2 }}
       />
 
-      {/* Checkbox for Judge Assignment */}
+      {/* Checkboxes for award type */}
       <FormControlLabel
-        control={
-          <Checkbox
-            checked={isJudge}
-            onChange={(e) => setIsJudge(e.target.checked)}
-          />
-        }
-        label="Is this award assigned by a judge?"
+        control={<Checkbox checked={isJudge} onChange={handleJudgeChange} />}
+        label="Assigned by Judge"
+      />
+      <FormControlLabel
+        control={<Checkbox checked={isVoted} onChange={handleVotedChange} />}
+        label="Voted by Teams"
       />
 
-      {/* Create award button under the checkbox */}
-      <Button variant="contained" onClick={handleCreateAward} sx={{ mb: 2, display: "block" }}>
-        Create Award
-      </Button>
+      {/* Create or Update award button */}
+      {editingAward ? (
+        <Button variant="contained" onClick={handleUpdateAward} sx={{ mb: 2, display: "block" }}>
+          Update Award
+        </Button>
+      ) : (
+        <Button variant="contained" onClick={handleCreateAward} sx={{ mb: 2, display: "block" }}>
+          Create Award
+        </Button>
+      )}
 
       {isLoading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
@@ -97,17 +161,53 @@ export default function AdminSpecialAwardsPage() {
                 mb: 1,
               }}
             >
-              <Typography>{award.award_name}</Typography>
-              {/* Button to delete the award */}
-              <Button color="error" onClick={() => handleDeleteAward(award.teamid, award.award_name)}>
-                Delete
-              </Button>
+              <Box>
+                <Typography variant="h6">{award.award_name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {award.isJudge ? "Assigned by Judge" : "Voted by Teams"}
+                </Typography>
+              </Box>
+              <Box>
+                <Button color="primary" onClick={() => handleEditAward(award)}>
+                  Edit
+                </Button>
+                <Button color="error" onClick={() => handleDeleteAward(award.teamid, award.award_name)}>
+                  Delete
+                </Button>
+              </Box>
             </Box>
           ))
         ) : (
           <Typography>No awards found.</Typography>
         )}
       </Box>
+
+      {/* Edit Award Modal */}
+      <Dialog open={isModalOpen} onClose={handleCloseModal}>
+        <DialogTitle>Edit Award</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Award Name"
+            variant="outlined"
+            fullWidth
+            value={awardName}
+            onChange={(e) => setAwardName(e.target.value)}
+            sx={{ mb: 2, mt: 2 }}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={isJudge} onChange={handleJudgeChange} />}
+            label="Assigned by Judge"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={isVoted} onChange={handleVotedChange} />}
+            label="Voted by Teams"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Cancel</Button>
+          <Button onClick={handleUpdateAward}>Update</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

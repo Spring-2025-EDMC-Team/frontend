@@ -5,10 +5,10 @@ import axios from "axios";
 //                Handles API calls and manages loading/error states and persists data in session storage
 
 // Define structure of SpecialAward 
-interface SpecialAward {
+export interface SpecialAward {
   teamid: number;
   award_name: string;
-  isjudge: boolean;
+  isJudge: boolean;
 }
 
 // Define structure of the state managed by store
