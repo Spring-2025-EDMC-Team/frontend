@@ -54,8 +54,8 @@ export default function TeamModal(props: ITeamModalProps) {
           clusterid: cluster,
           username: coachEmail,
           password: "password",
-          first_name: coachFirstName,
-          last_name: coachLastName,
+          first_name: coachFirstName || "n/a",
+          last_name: coachLastName || "n/a",
           contestid: contestId,
         });
         if (clusters) {
@@ -171,7 +171,6 @@ export default function TeamModal(props: ITeamModalProps) {
           </Select>
         </FormControl>
         <TextField
-          required
           label="Coach First Name"
           variant="outlined"
           value={coachFirstName}
@@ -179,7 +178,6 @@ export default function TeamModal(props: ITeamModalProps) {
           sx={{ mt: 3, width: 300 }}
         />
         <TextField
-          required
           label="Coach Last Name"
           variant="outlined"
           value={coachLastName}
