@@ -121,3 +121,4 @@ export const presentationQuestions = [
     lowPoints: 1,
     highPoints: 20,
     },
+];
