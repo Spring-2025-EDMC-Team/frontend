@@ -71,6 +71,7 @@ export interface Judge {
   phone_number: string;
   role: number;
   presentation: boolean;
+  redesign:boolean;
   mdo: boolean;
   journal: boolean;
   runpenalties: boolean;
@@ -89,6 +90,7 @@ export interface JudgeData {
   mdoSS: boolean;
   runPenSS: boolean;
   genPenSS: boolean;
+  redesignSS: boolean;
 }
 
 export interface MapContestToJudge {
@@ -118,6 +120,7 @@ export interface NewTeam {
   journal_score: number;
   presentation_score: number;
   machinedesign_score: number;
+  redesign_score: number;
   penalties_score: number;
   total_score: number;
   clusterid: number;
@@ -241,6 +244,7 @@ export enum ScoreSheetType {
   MachineDesign = 3,
   RunPenalties = 4,
   GeneralPenalties = 5,
+  Redesign = 6
 }
 
 export enum PresentationScoreSheetFields {
@@ -308,12 +312,24 @@ export enum GeneralPenaltiesScoreSheetFields {
   field7 = 7,
 }
 
+export enum RedesignScoreSheetFields {
+  field1 = 1,
+  field2 = 2,
+  field3 = 3,
+  field4 = 4,
+  field5 = 5,
+  field6 = 6,
+  field7 = 7,
+  field8 = 8,
+}
+
 export type ScoreSheetDetails = {
   [ScoreSheetType.Presentation]: PresentationScoreSheetDetails;
   [ScoreSheetType.Journal]: JournalScoreSheetDetails;
   [ScoreSheetType.MachineDesign]: MachineDesignScoreSheetDetails;
   [ScoreSheetType.RunPenalties]: RunPenaltiesScoreSheetDetails;
   [ScoreSheetType.GeneralPenalties]: GeneralPenaltiesScoreSheetDetails;
+  [ScoreSheetType.Redesign]: RedesignScoreSheetDetails;
 } | null;
 
 export type PresentationScoreSheetDetails = {
@@ -379,4 +395,15 @@ export interface GeneralPenaltiesScoreSheetDetails {
   [GeneralPenaltiesScoreSheetFields.field5]: any[];
   [GeneralPenaltiesScoreSheetFields.field6]: any[];
   [GeneralPenaltiesScoreSheetFields.field7]: any[];
+}
+
+export interface RedesignScoreSheetDetails {
+  [RedesignScoreSheetFields.field1]: number[];
+  [RedesignScoreSheetFields.field2]: number[];
+  [RedesignScoreSheetFields.field3]: number[];
+  [RedesignScoreSheetFields.field4]: number[];
+  [RedesignScoreSheetFields.field5]: number[];
+  [RedesignScoreSheetFields.field6]: number[];
+  [RedesignScoreSheetFields.field7]: number[];
+  [RedesignScoreSheetFields.field8]: string[];
 }

@@ -23,7 +23,7 @@ import RunPenalties from "./pages/RunPenalties";
 import ContestPage from "./pages/ContestsPage";
 import ContestScores from "./pages/ContestScores";
 import AdminSpecialAwardsPage from "./pages/AdminSpecialAwards";
-import OrganizerSpecialAwards from "./pages/OrganizerSpecialAwards";
+//import OrganizerSpecialAwards from "./pages/OrganizerSpecialAwards";
 import RedesignScore from "./pages/RedesignScore";
 
 function App() {
@@ -82,7 +82,7 @@ function App() {
           )}
           {<Route path="/login/" element={<Login />} />}
           {<Route path="/awards/" element={<AdminSpecialAwardsPage />} />}
-          {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />}
+          {/* {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />} */}
           {<Route path="/contestPage/" element={<ContestPage />} />}
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (

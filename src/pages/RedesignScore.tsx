@@ -28,7 +28,7 @@ export default function RedesignScore() {
 
   return (
     <ScoreSheetTableRedesign
-      sheetType={1}
+      sheetType={6}
       title="Redesign Score"
       teamName={team?.team_name || ""}
       questions={redesignQuestions}

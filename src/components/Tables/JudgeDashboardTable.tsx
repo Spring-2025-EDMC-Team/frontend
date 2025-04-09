@@ -137,6 +137,9 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
         case 5:
           navigate(`/general-penalties/${judge?.id}/${currentTeam}`);
           break;
+        case 6:
+            navigate(`/redesign-score/${judge?.id}/${currentTeam}`);
+            break;
         default:
           break;
       }
@@ -318,6 +321,14 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
                               type={1}
                               url="presentation-score"
                               buttonText="Presentation"
+                            />
+                          )}
+                          {judge?.redesign && contest?.is_open && (
+                            <ScoreSheetButton
+                              team={team}
+                              type={6}
+                              url="redesign-score"
+                              buttonText="Redesign"
                             />
                           )}
                           {judge?.mdo && contest?.is_open && (

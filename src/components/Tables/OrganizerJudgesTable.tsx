@@ -165,6 +165,7 @@ function JudgesTable(props: IJudgesTableProps) {
     if (judge.mdo) scoreSheets.push("Machine Design & Operation");
     if (judge.otherpenalties) scoreSheets.push("General Penalties");
     if (judge.runpenalties) scoreSheets.push("Run Penalties");
+    if (judge.redesign) scoreSheets.push("Redesign");
 
     return scoreSheets;
   };
@@ -189,6 +190,7 @@ function JudgesTable(props: IJudgesTableProps) {
             mdoSS: judge.mdo,
             runPenSS: judge.runpenalties,
             genPenSS: judge.otherpenalties,
+            redesignSS: judge.redesign, 
             phoneNumber: judge.phone_number,
           });
         }}

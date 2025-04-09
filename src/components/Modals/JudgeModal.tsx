@@ -51,6 +51,7 @@ export default function JudgeModal(props: IJudgeModalProps) {
     { label: "Machine Design & Operation", value: "mdoSS" },
     { label: "Run Penalties", value: "runPenSS" },
     { label: "General Penalties", value: "genPenSS" },
+    { label: "Redesign", value: "redesignSS" },
   ];
 
   const titleOptions = [
@@ -141,6 +142,7 @@ export default function JudgeModal(props: IJudgeModalProps) {
           journal: selectedSheets.includes("journalSS"),
           runpenalties: selectedSheets.includes("runPenSS"),
           otherpenalties: selectedSheets.includes("genPenSS"),
+          redesign: selectedSheets.includes("redesignSS"),
           username: email,
           password: "password",
           contestid: contestid,
@@ -170,6 +172,7 @@ export default function JudgeModal(props: IJudgeModalProps) {
           journal: selectedSheets.includes("journalSS"),
           runpenalties: selectedSheets.includes("runPenSS"),
           otherpenalties: selectedSheets.includes("genPenSS"),
+          redesign: selectedSheets.includes("redesignSS"),
           username: email,
           clusterid: clusterId,
           role: selectedTitle,
