@@ -23,6 +23,8 @@ import RunPenalties from "./pages/RunPenalties";
 import ContestPage from "./pages/ContestsPage";
 import ContestScores from "./pages/ContestScores";
 import AdminSpecialAwardsPage from "./pages/AdminSpecialAwards";
+import OrganizerSpecialAwards from "./pages/OrganizerSpecialAwards";
+import RedesignScore from "./pages/RedesignScore";
 
 function App() {
   const currentLink = useLocation().pathname;
@@ -72,8 +74,15 @@ function App() {
               element={<RunPenalties />}
             />
           )}
+          {isAuthenticated && role?.user_type != 4 && (
+            <Route
+              path="/redesign-score/:judgeId/:teamId/"
+              element={<RedesignScore />}
+            />
+          )}
           {<Route path="/login/" element={<Login />} />}
           {<Route path="/awards/" element={<AdminSpecialAwardsPage />} />}
+          {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />}
           {<Route path="/contestPage/" element={<ContestPage />} />}
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (
