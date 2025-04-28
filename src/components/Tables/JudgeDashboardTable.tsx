@@ -140,6 +140,10 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
         case 6:
             navigate(`/redesign-score/${judge?.id}/${currentTeam}`);
             break;
+        case 7:
+            // TODO: Update to correct name if needed ('championship-score' or 'machine-score')
+            navigate(`/championship-score/${judge?.id}/${currentTeam}`);
+            break;
         default:
           break;
       }
@@ -329,6 +333,14 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
                               type={6}
                               url="redesign-score"
                               buttonText="Redesign"
+                            />
+                          )}
+                          {judge?.championship && contest?.is_open && (
+                            <ScoreSheetButton
+                              team={team}
+                              type={7}
+                              url="championship-score"
+                              buttonText="Championship"
                             />
                           )}
                           {judge?.mdo && contest?.is_open && (

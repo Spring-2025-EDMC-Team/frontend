@@ -52,6 +52,7 @@ export default function TeamModal(props: ITeamModalProps) {
           penalties_score: 0,
           total_score: 0,
           redesign_score: 0,
+          championship_score: 0,
           clusterid: cluster,
           username: coachEmail,
           password: "password",

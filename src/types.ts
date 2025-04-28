@@ -72,6 +72,7 @@ export interface Judge {
   role: number;
   presentation: boolean;
   redesign:boolean;
+  championship:boolean;
   mdo: boolean;
   journal: boolean;
   runpenalties: boolean;
@@ -91,6 +92,7 @@ export interface JudgeData {
   runPenSS: boolean;
   genPenSS: boolean;
   redesignSS: boolean;
+  championshipSS: boolean;
 }
 
 export interface MapContestToJudge {
@@ -121,6 +123,7 @@ export interface NewTeam {
   presentation_score: number;
   machinedesign_score: number;
   redesign_score: number;
+  championship_score: number;
   penalties_score: number;
   total_score: number;
   clusterid: number;
@@ -244,7 +247,8 @@ export enum ScoreSheetType {
   MachineDesign = 3,
   RunPenalties = 4,
   GeneralPenalties = 5,
-  Redesign = 6
+  Redesign = 6,
+  Championship = 7
 }
 
 export enum PresentationScoreSheetFields {
@@ -321,6 +325,18 @@ export enum RedesignScoreSheetFields {
   field6 = 6,
   field7 = 7,
   field8 = 8,
+}
+
+export enum ChampionshipScoreSheetFields {
+  field1 = 1,
+  field2 = 2,
+  field3 = 3,
+  field4 = 4,
+  field5 = 5,
+  field6 = 6,
+  field7 = 7,
+  field8 = 8,
+  Comments = 9,
 }
 
 export type ScoreSheetDetails = {
@@ -406,4 +422,16 @@ export interface RedesignScoreSheetDetails {
   [RedesignScoreSheetFields.field6]: number[];
   [RedesignScoreSheetFields.field7]: number[];
   [RedesignScoreSheetFields.field8]: string[];
+}
+
+export interface ChampionshipScoreSheetDetails {
+  [MachineDesignScoreSheetFields.field1]: number[];
+  [MachineDesignScoreSheetFields.field2]: number[];
+  [MachineDesignScoreSheetFields.field3]: number[];
+  [MachineDesignScoreSheetFields.field4]: number[];
+  [MachineDesignScoreSheetFields.field5]: number[];
+  [MachineDesignScoreSheetFields.field6]: number[];
+  [MachineDesignScoreSheetFields.field7]: number[];
+  [MachineDesignScoreSheetFields.field8]: number[];
+  [MachineDesignScoreSheetFields.Comments]: string[];
 }
