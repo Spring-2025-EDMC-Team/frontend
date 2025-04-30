@@ -106,7 +106,7 @@ export default function AdminSpecialAwardsPage() {
 
   return (
     <Container>
-      <Typography variant="h1" sx={{ m: 5 }}>
+      <Typography variant="h4" sx={{ m: 5 }}>
         Special Awards Management
       </Typography>
 
@@ -127,7 +127,7 @@ export default function AdminSpecialAwardsPage() {
       />
       <FormControlLabel
         control={<Checkbox checked={isVoted} onChange={handleVotedChange} />}
-        label="Voted by Teams"
+        label="Assigned by Organizer"
       />
 
       {/* Create or Update award button */}
@@ -164,7 +164,7 @@ export default function AdminSpecialAwardsPage() {
               <Box>
                 <Typography variant="h6">{award.award_name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {award.isJudge ? "Assigned by Judge" : "Voted by Teams"}
+                  {award.isJudge ? "Assigned by Judge" : "Assigned by Organizer"}
                 </Typography>
               </Box>
               <Box>
@@ -200,7 +200,7 @@ export default function AdminSpecialAwardsPage() {
           />
           <FormControlLabel
             control={<Checkbox checked={isVoted} onChange={handleVotedChange} />}
-            label="Voted by Teams"
+            label="Assigned by Organizer"
           />
         </DialogContent>
         <DialogActions>

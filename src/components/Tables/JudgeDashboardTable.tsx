@@ -12,6 +12,15 @@ import {
   IconButton,
   CircularProgress,
   Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -49,6 +58,8 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
   const [currentScoreSheetId, setCurrentScoreSheetId] = useState(-1);
   const [currentTeam, setCurrentTeam] = useState(-1);
   const [currentSheetType, setCurrentSheetType] = useState(-1);
+  const [openMultiDialog, setOpenMultiDialog] = useState(false);
+  const [multiType, setMultiType] = useState<"presentation" | "journal" | "machine-design">("presentation");
 
   const navigate = useNavigate();
 
@@ -67,6 +78,7 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
     setOpenRows(allExpanded);
   };
 
+  //Figure out how to get contest_id from this
   useEffect(() => {
     if (judge) {
       fetchScoreSheetsByJudge(judge.id);
@@ -116,6 +128,29 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
     return data?.scoresheet?.id;
   };
   console.log(teams);
+
+
+  const handleMultiTeamScore = () => {
+    setOpenMultiDialog(true);
+  };
+
+  const handleCancelMulti = () => {
+    setOpenMultiDialog(false);
+  };
+
+  const handleConfirmMulti = () => {
+    if (!judge || !contest?.id) return; 
+  
+    const typePath =
+      multiType === "machine-design" ? "machinedesign" : multiType;
+  
+    navigate(
+      `/multi-team-${typePath}-score/${judge.id}/${contest.id}/`
+    );
+  
+    setOpenMultiDialog(false);
+  };
+  
 
   const handleUnsubmitSheet = async () => {
     try {
@@ -261,6 +296,56 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
         >
           Expand All Teams
         </Button>
+        <Button
+          variant="contained"
+          onClick={handleMultiTeamScore}
+          sx={{
+            mb: 2,
+            bgcolor: theme.palette.secondary.main,
+            color: theme.palette.primary.main,
+            width: 200,
+            height: 45,
+          }}
+        >
+          Score Multple Teams
+        </Button>
+
+        <Dialog open={openMultiDialog} onClose={handleCancelMulti}>
+          <DialogTitle>Score Multiple Teams</DialogTitle>
+          <DialogContent>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Select sheet type</FormLabel>
+              <RadioGroup
+                value={multiType}
+                onChange={(e) => setMultiType(e.target.value as any)}
+              >
+                <FormControlLabel
+                  value="presentation"
+                  control={<Radio />}
+                  label="Presentation"
+                />
+                <FormControlLabel
+                  value="journal"
+                  control={<Radio />}
+                  label="Journal"
+                />
+                <FormControlLabel
+                  value="machine-design"
+                  control={<Radio />}
+                  label="Machine Design"
+                />
+              </RadioGroup>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelMulti}>Cancel</Button>
+            <Button onClick={handleConfirmMulti} variant="contained">
+              Go
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+      
         <TableContainer component={Paper}>
           <Table>
             <TableBody>

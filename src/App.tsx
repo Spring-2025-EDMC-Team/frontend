@@ -23,9 +23,12 @@ import RunPenalties from "./pages/RunPenalties";
 import ContestPage from "./pages/ContestsPage";
 import ContestScores from "./pages/ContestScores";
 import AdminSpecialAwardsPage from "./pages/AdminSpecialAwards";
-//import OrganizerSpecialAwards from "./pages/OrganizerSpecialAwards";
+import OrganizerSpecialAwards from "./pages/OrganizerSpecialAwards";
+import JudgeSpecialAwards from "./pages/JudgeSpecialAwards";
 import RedesignScore from "./pages/RedesignScore";
-
+import MultiTeamPresentationScore from "./pages/PresentationMultiTeamScore"
+import MultiTeamJournalScore from "./pages/JournalMultiTeamScore";
+import MultiTeamMachineDesignScore from "./pages/MachineDesignMultiTeamScore";
 function App() {
   const currentLink = useLocation().pathname;
   const { isAuthenticated, role } = useAuthStore();
@@ -81,9 +84,22 @@ function App() {
             />
           )}
           {<Route path="/login/" element={<Login />} />}
-          {<Route path="/awards/" element={<AdminSpecialAwardsPage />} />}
-          {/* {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />} */}
+          {isAuthenticated && (
+            <Route
+              path="/awards/"
+              element={<AdminSpecialAwardsPage />}
+            />
+          )}
+          {/* {<Route path="/awards/" element={<AdminSpecialAwardsPage />} />}  */}
+          {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />} 
+          {<Route path="/judgeAwards/" element={<JudgeSpecialAwards />} />} 
           {<Route path="/contestPage/" element={<ContestPage />} />}
+          {<Route path="/MultiTeam/" element={<MultiTeamPresentationScore />} />}
+
+          {<Route path="/multi-team-machinedesign-score/:judgeId/:contestId/" element={<MultiTeamMachineDesignScore />} />}
+          {<Route path="/multi-team-journal-score/:judgeId/:contestId/" element={<MultiTeamJournalScore />} />}
+
+          {<Route path="/multi-team-presentation-score/:judgeId/:contestId/" element={<MultiTeamPresentationScore />} />}
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (
             <Route path="/organizer/" element={<Organizer />} />
