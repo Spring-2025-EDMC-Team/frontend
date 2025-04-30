@@ -8,6 +8,9 @@ interface ScoreSheetState {
   isLoadingScoreSheet: boolean;
   scoreSheetError: string | null;
   scoreSheetBreakdown: ScoreSheetDetails;
+  multipleScoreSheets: ScoreSheet[] | null;
+  
+  // Existing methods
   fetchScoreSheetById: (scoresId: number) => Promise<void>;
   createScoreSheet: (data: Partial<ScoreSheet>) => Promise<void>;
   editScoreSheet: (data: Partial<ScoreSheet>) => Promise<void>;
@@ -29,16 +32,22 @@ interface ScoreSheetState {
   clearScoreSheet: () => void;
   getScoreSheetBreakdown: (teamId: number) => Promise<void>;
   clearScoreBreakdown: () => void;
+  
+  // New methods
+  fetchMultipleScoreSheets: (teamIds: number[], judgeId: number, sheetType: number) => Promise<void>;
+  updateMultipleScores: (scoreSheets: Partial<ScoreSheet>[]) => Promise<void>;
+  submitMultipleScoreSheets: (scoreSheets: Partial<ScoreSheet>[]) => Promise<void>;
 }
 
 export const useScoreSheetStore = create<ScoreSheetState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       scoreSheet: null,
       createdScoreSheets: [],
       isLoadingScoreSheet: false,
       scoreSheetError: null,
       scoreSheetBreakdown: null,
+      multipleScoreSheets: null,
 
       clearScoreSheet: async () => {
         try {
@@ -257,6 +266,129 @@ export const useScoreSheetStore = create<ScoreSheetState>()(
           set({ isLoadingScoreSheet: false });
         }
       },
+
+      // New methods for multiple score sheets
+      // Fetch score sheets for multiple teams
+      fetchMultipleScoreSheets: async (teamIds: number[], judgeId: number, sheetType: number) => {
+        set({ isLoadingScoreSheet: true });
+        try {
+          const token = localStorage.getItem("token");
+          
+          // First get the score sheet IDs for each team
+          const sheetsPromises = teamIds.map(async (teamId) => {
+            try {
+              console.log(`Fetching sheet: sheetType=${sheetType}, judgeId=${judgeId}, teamId=${teamId}`);
+              const mapResponse = await axios.get(`/api/mapping/scoreSheet/getByTeamJudge/${sheetType}/${judgeId}/${teamId}/`, {
+                headers: {
+                  Authorization: `Token ${token}`,
+                  "Content-Type": "application/json",
+                }
+              });
+          
+              const scoreSheetId = mapResponse.data.ScoreSheet?.id;
+
+          
+              if (scoreSheetId) {
+                const sheetResponse = await axios.get(`/api/scoreSheet/get/${scoreSheetId}/`, {
+                  headers: {
+                    Authorization: `Token ${token}`,
+                    "Content-Type": "application/json",
+                  }
+                });
+          
+                return {
+                  ...sheetResponse.data.ScoreSheet,
+                  teamId,
+                  judgeId,
+                  sheetType,
+                };
+              }
+              return null;
+            } catch (error) {
+              console.error(`Error fetching score sheet for team ${teamId}:`, error);
+              return null;
+            }
+          });
+          
+          const results = await Promise.all(sheetsPromises);
+          
+          const validSheets = results.filter((sheet): sheet is ScoreSheet => sheet !== null);
+          set({ 
+            multipleScoreSheets: validSheets,
+            scoreSheetError: null 
+          });
+        } catch (error) {
+          set({ scoreSheetError: "Failed to fetch multiple score sheets" });
+          console.error("Failed to fetch multiple score sheets:", error);
+        } finally {
+          set({ isLoadingScoreSheet: false });
+        }
+      },
+      
+      // Update scores for multiple score sheets
+      updateMultipleScores: async (scoreSheets: Partial<ScoreSheet>[]) => {
+        set({ isLoadingScoreSheet: true });
+        try {
+          const token = localStorage.getItem("token");
+          
+          const updatePromises = scoreSheets.map(sheet => 
+            axios.post(`/api/scoreSheet/edit/updateScores/`, sheet, {
+              headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+              }
+            })
+          );
+          
+          await Promise.all(updatePromises);
+          
+          // After successful updates, refresh the data
+          const currentSheets = get().multipleScoreSheets;
+          if (currentSheets && currentSheets.length > 0) {
+            const teamIds = currentSheets.map(sheet => sheet.teamId).filter((id): id is number => id !== undefined);
+            const sampleSheet = currentSheets[0];
+            
+            if (teamIds.length > 0 && sampleSheet?.judgeId && sampleSheet?.sheetType) {
+              await get().fetchMultipleScoreSheets(teamIds, sampleSheet.judgeId, sampleSheet.sheetType);
+            }
+          }
+          
+          set({ scoreSheetError: null });
+        } catch (error) {
+          set({ scoreSheetError: "Failed to update multiple score sheets" });
+          console.error("Failed to update multiple score sheets:", error);
+        } finally {
+          set({ isLoadingScoreSheet: false });
+        }
+      },
+      
+      // Submit multiple score sheets (mark as submitted)
+      submitMultipleScoreSheets: async (scoreSheets: Partial<ScoreSheet>[]) => {
+        set({ isLoadingScoreSheet: true });
+        try {
+          const token = localStorage.getItem("token");
+          
+          const submitPromises = scoreSheets.map(sheet => 
+            axios.post(`/api/scoreSheet/edit/`, {
+              ...sheet,
+              isSubmitted: true
+            }, {
+              headers: {
+                Authorization: `Token ${token}`,
+                "Content-Type": "application/json",
+              }
+            })
+          );
+          
+          await Promise.all(submitPromises);
+          set({ scoreSheetError: null });
+        } catch (error) {
+          set({ scoreSheetError: "Failed to submit multiple score sheets" });
+          console.error("Failed to submit multiple score sheets:", error);
+        } finally {
+          set({ isLoadingScoreSheet: false });
+        }
+      }
     }),
     {
       name: "score-sheet-storage",
