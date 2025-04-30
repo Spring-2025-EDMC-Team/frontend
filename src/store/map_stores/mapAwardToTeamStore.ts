@@ -20,6 +20,7 @@ interface SpecialAwardState {
   // Methods to interact with the state/backend
   getAllAwards: () => Promise<void>;
   getAwardsByTeam: (teamId: number) => Promise<void>;
+  getAwardsByRole: (isJudge: string) => Promise<void>;
   AwardsByTeamTable: (teamId: number) => Promise<void>;
   createAward: (award: SpecialAward) => Promise<void>;
   updateAward: (teamId: number, awardName: string, updatedAward: SpecialAward) => Promise<void>;
@@ -127,6 +128,23 @@ const useSpecialAwardStore = create<SpecialAwardState>()(
           }));
         } catch (error: any) {
           set({ error: "Error updating award", isLoading: false });
+        }
+      },
+
+      // Method to update an existing award
+      getAwardsByRole: async (isJudge: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(`/api/mapping/awardToTeam/getAwardByRole/${isJudge}/`, {
+            headers: {
+              Authorization: `Token ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          set({ awards: response.data, isLoading: false });
+        } catch (error: any) {
+          set({ error: "Error fetching awards", isLoading: false });
         }
       },
 
