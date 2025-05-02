@@ -29,6 +29,8 @@ import RedesignScore from "./pages/RedesignScore";
 import MultiTeamPresentationScore from "./pages/PresentationMultiTeamScore"
 import MultiTeamJournalScore from "./pages/JournalMultiTeamScore";
 import MultiTeamMachineDesignScore from "./pages/MachineDesignMultiTeamScore";
+import ChampionshipScore from "./pages/ChampionshipScore";
+
 function App() {
   const currentLink = useLocation().pathname;
   const { isAuthenticated, role } = useAuthStore();
@@ -99,6 +101,13 @@ function App() {
             />
           )}
           {/* {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />}  */}
+
+          {isAuthenticated && (
+            <Route
+              path="/championship-score/:judgeId/:contestId/" 
+              element={<ChampionshipScore />}
+            />
+          )}
 
           {isAuthenticated && (
             <Route

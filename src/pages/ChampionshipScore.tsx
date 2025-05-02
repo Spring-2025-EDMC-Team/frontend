@@ -3,10 +3,10 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/primary_stores/authStore";
 import { useTeamStore } from "../store/primary_stores/teamStore";
-import { machineDesignQuestions } from "../data/machineDesignQuestions";
+import { championshipQuestions } from "../data/championshipQuestions";
 import ScoreSheetTable from "../components/Tables/ScoreSheetTable";
 
-export default function MachineDesignScore() {
+export default function ChampionshipScore() {
   const { role } = useAuthStore();
   const { team, fetchTeamById } = useTeamStore();
   const { judgeId, teamId } = useParams();
@@ -16,7 +16,7 @@ export default function MachineDesignScore() {
 
   useEffect(() => {
     if (role?.user_type == 3 && parsedJudgeId != role.user.id) {
-      navigate(`/machine-score/${role.user.id}/${teamId}/`);
+      navigate(`/championship-score/${role.user.id}/${teamId}/`);
     }
   }, [judgeId]);
 
@@ -29,9 +29,9 @@ export default function MachineDesignScore() {
   return (
     <ScoreSheetTable
       sheetType={7}
-      title="Machine Design and Operation Score"
+      title="Championship Round Scoring"
       teamName={team?.team_name || ""}
-      questions={machineDesignQuestions}
+      questions={championshipQuestions}
       teamId={parsedTeamId}
       judgeId={parsedJudgeId}
       seperateJrAndSr={true}

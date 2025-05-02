@@ -102,7 +102,7 @@ export default function ScoreSheetTableRedesign({
         5: scoreSheet.field5,
         6: scoreSheet.field6,
         7: scoreSheet.field7,
-        8: scoreSheet.field8,
+        8: scoreSheet.field9,
       });
     } else {
       setFormData({});
