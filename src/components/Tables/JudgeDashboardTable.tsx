@@ -396,7 +396,7 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
                             gap: 1,
                           }}
                         >
-                          {judge?.journal && (
+                          {judge?.journal && contest?.is_open && (
                             <ScoreSheetButton
                               team={team}
                               type={2}
@@ -436,7 +436,7 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
                               buttonText="Machine Design and Operation"
                             />
                           )}
-                          {judge?.runpenalties && (
+                          {judge?.runpenalties && contest?.is_open && (
                             <ScoreSheetButton
                               team={team}
                               type={4}
@@ -444,7 +444,7 @@ export default function JudgeDashboardTable(props: IJudgeDashboardProps) {
                               buttonText="Run Penalties"
                             />
                           )}
-                          {judge?.otherpenalties && (
+                          {judge?.otherpenalties && contest?.is_open && (
                             <ScoreSheetButton
                               team={team}
                               type={5}

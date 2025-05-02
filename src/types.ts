@@ -324,7 +324,7 @@ export enum RedesignScoreSheetFields {
   field5 = 5,
   field6 = 6,
   field7 = 7,
-  field8 = 8,
+  field8 = 9,
 }
 
 export enum ChampionshipScoreSheetFields {

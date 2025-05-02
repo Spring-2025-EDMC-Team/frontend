@@ -91,15 +91,57 @@ function App() {
             />
           )}
           {/* {<Route path="/awards/" element={<AdminSpecialAwardsPage />} />}  */}
-          {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />} 
-          {<Route path="/judgeAwards/" element={<JudgeSpecialAwards />} />} 
+
+          {isAuthenticated && (
+            <Route
+              path="/organizerAwards/" 
+              element={<OrganizerSpecialAwards />}
+            />
+          )}
+          {/* {<Route path="/organizerAwards/" element={<OrganizerSpecialAwards />} />}  */}
+
+          {isAuthenticated && (
+            <Route
+              path="/judgeAwards/"
+              element={<JudgeSpecialAwards />}
+            />
+          )}
+          {/* {<Route path="/judgeAwards/" element={<JudgeSpecialAwards />} />}  */}
+
+          
           {<Route path="/contestPage/" element={<ContestPage />} />}
-          {<Route path="/MultiTeam/" element={<MultiTeamPresentationScore />} />}
 
-          {<Route path="/multi-team-machinedesign-score/:judgeId/:contestId/" element={<MultiTeamMachineDesignScore />} />}
-          {<Route path="/multi-team-journal-score/:judgeId/:contestId/" element={<MultiTeamJournalScore />} />}
+          {isAuthenticated && (
+            <Route
+              path="/MultiTeam/"
+              element={<MultiTeamPresentationScore />}
+            />
+          )}
+          {/* {<Route path="/MultiTeam/" element={<MultiTeamPresentationScore />} />} */}
 
-          {<Route path="/multi-team-presentation-score/:judgeId/:contestId/" element={<MultiTeamPresentationScore />} />}
+          {isAuthenticated && (
+            <Route
+              path="/multi-team-machinedesign-score/:judgeId/:contestId/"
+              element={<MultiTeamMachineDesignScore />}
+            />
+          )}
+          {/* {<Route path="/multi-team-machinedesign-score/:judgeId/:contestId/" element={<MultiTeamMachineDesignScore />} />} */}
+
+          {isAuthenticated && (
+            <Route
+              path="/multi-team-journal-score/:judgeId/:contestId/"
+              element={<MultiTeamJournalScore />}
+            />
+          )}
+          {/* {<Route path="/multi-team-journal-score/:judgeId/:contestId/" element={<MultiTeamJournalScore />} />} */}
+
+          {isAuthenticated && (
+            <Route
+              path="/multi-team-presentation-score/:judgeId/:contestId/" 
+              element={<MultiTeamPresentationScore />}
+            />
+          )}
+          {/* {<Route path="/multi-team-presentation-score/:judgeId/:contestId/" element={<MultiTeamPresentationScore />} />} */}
           {isAuthenticated && <Route path="/logout/" element={<Logout />} />}
           {role?.user_type == 2 && (
             <Route path="/organizer/" element={<Organizer />} />
